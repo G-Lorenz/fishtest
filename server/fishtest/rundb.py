@@ -618,6 +618,7 @@ class RunDb:
                 )
                 and run["args"]["threads"] <= max_threads
                 and run["args"]["threads"] >= min_threads
+                and max_threads % run["args"]["threads"] == 0
                 and need_base + need_tt <= max_memory
                 # To avoid time losses in the case of large concurrency and short TC,
                 # probably due to cutechess-cli as discussed in issue #822,
