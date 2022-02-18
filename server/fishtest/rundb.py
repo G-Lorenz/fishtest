@@ -712,14 +712,19 @@ class RunDb:
                     return int(h.group(1))
                 return 0
 
-            need_tt += get_hash(run["args"]["new_options"])
-            need_tt += get_hash(run["args"]["base_options"])
-            need_tt *= max_threads // run["args"]["threads"]
+            need_tt_s += get_hash(run["args"]["new_options"])
+            need_tt_s += get_hash(run["args"]["base_options"])
+            need_tt    = need_tt_s * max_threads // run["args"]["threads"]
             # estime another 70MB per process for net (40) and other things besides hash
             need_base = 2 * 70 * (max_threads // run["args"]["threads"])
 
-            if need_base + need_tt > max_memory:
+            # check if the memory required for one game exceeds max_memory
+            if need_base + need_tt_s > max_memory:
                 continue
+
+            # reduce concurrency if there isn't enough memory
+            if need_base + need_tt > max_memory:
+                max_threads = (max_memory // (need_tt_s + 2 * 70)) * run["args"]["threads"]
 
             # Github API limit...
             if near_github_api_limit:
