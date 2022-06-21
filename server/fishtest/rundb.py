@@ -88,6 +88,7 @@ class RunDb:
         throughput=100,
         priority=0,
         adjudication=True,
+        compiler="blend",
     ):
         if start_time is None:
             start_time = datetime.utcnow()
@@ -119,6 +120,7 @@ class RunDb:
             "itp": 100,  # internal throughput
             "priority": priority,
             "adjudication": adjudication,
+            "compiler": compiler,
         }
 
         if sprt is not None:
@@ -680,6 +682,10 @@ class RunDb:
                 continue
 
             if not run["approved"]:
+                continue
+
+            if (    run["args"]["compiler"] is not "blend"
+                and run["args"]["compiler"] is not worker_info["compiler"]):
                 continue
 
             if run["args"]["threads"] > max_threads:

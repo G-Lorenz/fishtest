@@ -751,6 +751,7 @@ def validate_form(request):
     data["threads"] = int(request.POST["threads"])
     data["priority"] = int(request.POST["priority"])
     data["throughput"] = int(request.POST["throughput"])
+    data["compiler"] = request.POST["compiler"]
 
     if data["threads"] <= 0:
         raise Exception("Threads must be >= 1")

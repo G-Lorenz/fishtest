@@ -374,6 +374,13 @@ else:
              ${'checked' if not args.get("adjudication", True) else ''}>
       <label style="margin-left: 10px"
              for="checkbox-adjudication">Disable adjudication</label>
+
+      <select name="compiler">
+             <option value="blend">blend</option>
+             <option value="gcc">gcc</option>
+             <option value="clang">clang</option>
+      </select>
+
     </div>
   </section>
 
