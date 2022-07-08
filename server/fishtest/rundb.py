@@ -477,7 +477,7 @@ class RunDb:
         if username:
             q["args.username"] = username
         if ltc_only:
-            q["tc_base"] = {"$gte": 40}
+            q["tc_base"] = {"$gte": {"$expr": {"$divide": [40, "$threads"]}}}
         if success_only:
             q["is_green"] = True
         if yellow_only:
