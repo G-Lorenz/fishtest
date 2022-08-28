@@ -33,7 +33,9 @@ if 'spsa' in run['args']:
   <div class="col-12 col-lg-9">
     <h4>Details</h4>
 
-    <%! import markupsafe %>
+    <%!
+      import markupsafe
+    %>
 
     <div class="table-responsive-lg">
       <table class="table table-striped table-sm">
@@ -107,87 +109,85 @@ if 'spsa' in run['args']:
 
   <div class="col-12 col-lg-3">
     <h4>Actions</h4>
-    % if not run['finished']:
-        <form action="/tests/stop" method="POST" style="display: inline;">
-          <input type="hidden" name="run-id" value="${run['_id']}">
-          <button type="submit" class="btn btn-danger">
-            Stop
-          </button>
-        </form>
+    <div class="row g-2 mb-2">
+      % if not run['finished']:
+        <div class="col-12 col-sm">
+          <form action="/tests/stop" method="POST">
+            <input type="hidden" name="run-id" value="${run['_id']}">
+            <button type="submit" class="btn btn-danger w-100">
+              Stop
+            </button>
+          </form>
+        </div>
 
         % if not run.get('approved', False):
-            <span>
-              <form action="/tests/approve" method="POST" style="display: inline;">
-                <input type="hidden" name="run-id" value="${run['_id']}">
-                <button type="submit" id="approve-btn"
-                        class="btn ${'btn-success' if run['base_same_as_master'] else 'btn-warning'}">
-                  Approve
-                </button>
-              </form>
-            </span>
+          <div class="col-12 col-sm">
+            <form action="/tests/approve" method="POST">
+              <input type="hidden" name="run-id" value="${run['_id']}">
+              <button type="submit" id="approve-btn"
+                      class="btn ${'btn-success' if run['base_same_as_master'] else 'btn-warning'} w-100">
+                Approve
+              </button>
+            </form>
+          </div>
         % endif
-    % else:
-        <form action="/tests/purge" method="POST" style="display: inline;">
-          <input type="hidden" name="run-id" value="${run['_id']}">
-          <button type="submit" class="btn btn-danger">
-            Purge
-          </button>
-        </form>
-    % endif
-    <a href="/tests/run?id=${run['_id']}">
-      <button class="btn btn-light border">Reschedule</button>
-    </a>
-
-    <br>
-    <br>
+      % else:
+        <div class="col-12 col-sm">
+          <form action="/tests/purge" method="POST">
+            <input type="hidden" name="run-id" value="${run['_id']}">
+            <button type="submit" class="btn btn-danger w-100">Purge</button>
+          </form>
+        </div>
+      % endif
+      <div class="col-12 col-sm">
+        <a class="btn btn-light border w-100" href="/tests/run?id=${run['_id']}">Reschedule</a>
+      </div>
+    </div>
 
     % if run.get('base_same_as_master') is not None:
-        <div id="master-diff"
-            class="alert ${'alert-success' if run['base_same_as_master'] else 'alert-danger'}">
-          % if run['base_same_as_master']:
+        % if run['base_same_as_master']:
+            <div id="master-diff" class="alert alert-success">
               Base branch same as Stockfish master
-          % else:
+        % else:
+            <div id="master-diff" class="alert alert-danger mb-2">
               Base branch not same as Stockfish master
-          % endif
-        </div>
+        % endif
+            </div>
     % endif
 
     % if not run.get('base_same_as_master'):
-        <a href="${h.master_diff_url(run)}" target="_blank" rel="noopener">Master diff</a>
+        <div class="alert alert-warning">
+          <a class="alert-link" href="${h.master_diff_url(run)}" target="_blank" rel="noopener">Master diff</a>
+        </div>
     % endif
 
     <hr>
 
     <form class="form" action="/tests/modify" method="POST">
-      <label class="control-label">Number of games:</label>
-      <div class="input-group mb-3">
-        <input type="text" name="num-games" value="${run['args']['num_games']}"
-               class="form-control">
+      <div class="mb-3">
+        <label class="form-label" for="modify-num-games">Number of games</label>
+        <input type="number" class="form-control" name="num-games" id="modify-num-games" min="0" step="1000" value="${run['args']['num_games']}">
       </div>
 
-      <label class="control-label">Adjust priority (higher is more urgent):</label>
-      <div class="input-group mb-3">
-        <input type="text" name="priority" value="${run['args']['priority']}"
-               class="form-control">
+      <div class="mb-3">
+        <label class="form-label" for="modify-priority">Priority (higher is more urgent)</label>
+        <input type="number" class="form-control" name="priority" id="modify-priority" value="${run['args']['priority']}">
       </div>
 
-      <label class="control-label">Adjust throughput (%):</label>
-      <div class="input-group mb-3">
-        <input type="text" name="throughput" value="${run['args'].get('throughput', 1000)}"
-               class="form-control">
+      <label class="form-label" for="modify-throughput">Throughput</label>
+      <div class="mb-3 input-group">
+        <input type="number" class="form-control" name="throughput" id="modify-throughput" min="0" value="${run['args'].get('throughput', 1000)}">
+        <span class="input-group-text">%</span>
       </div>
 
-      <div class="control-group">
-        <label class="checkbox">
-          <input type="checkbox" name="auto_purge"
-                 ${'checked' if run['args'].get('auto_purge') else ''} />
-          Auto-purge
-        </label>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="auto-purge" name="auto_purge"
+               ${'checked' if run['args'].get('auto_purge') else ''} />
+        <label class="form-check-label" for="auto-purge">Auto-purge</label>
       </div>
 
       <input type="hidden" name="run" value="${run['_id']}" />
-      <br>
-      <button type="submit" class="btn btn-primary">Modify</button>
+      <button type="submit" class="btn btn-primary col-12 col-md-auto">Modify</button>
     </form>
 
     % if 'spsa' not in run['args']:
@@ -229,7 +229,7 @@ if 'spsa' in run['args']:
         <button id="btn_view_individual" type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown">
           View Individual Parameter<span class="caret"></span>
         </button>
-  <ul class="dropdown-menu" style="z-index: 1030" role="menu" id="dropdown_individual"></ul>
+        <ul class="dropdown-menu" role="menu" id="dropdown_individual"></ul>
       </div>
 
       <button id="btn_view_all" class="btn">View All</button>
@@ -241,25 +241,36 @@ if 'spsa' in run['args']:
 
 <section id="diff-section" style="display: none">
   <h4>
-    <button id="diff-toggle" class="btn btn-sm btn-light border">Show</button>
+    <button id="diff-toggle" class="btn btn-sm btn-light border mb-2">Show</button>
     Diff
     <span id="diff-num-comments" style="display: none"></span>
-    <a href="${h.diff_url(run)}" class="btn btn-link" target="_blank" rel="noopener">View on Github</a>
-    <a href="javascript:" id="copy-diff" class="btn btn-link" style="margin-left: 10px; display: none">Copy apply-diff command</a>
-    <div class="btn btn-link copied" style="color: green; display: none">Copied command!</div>
+    <a href="${h.diff_url(run)}" class="btn btn-primary bg-light-primary border-0 mb-2" target="_blank" rel="noopener">View on Github</a>
+    <a href="javascript:" id="copy-diff" class="btn btn-secondary bg-light-secondary border-0 mb-2" style="display: none">Copy apply-diff command</a>
+    <span class="text-success copied text-nowrap" style="display: none">Copied!</span>
   </h4>
   <pre id="diff-contents"><code class="diff"></code></pre>
 </section>
 
+<script>
+    function toggle_tasks() {
+      const button = document.querySelector("#tasks-button");
+      const div = document.querySelector("#tasks");
+      const active = button.innerText.trim() === 'Hide';
+      button.innerText = active ? 'Show' : 'Hide';
+      document.cookie = 'tasks_state' + '=' + button.innerText.trim() + ";max-age=315360000";
+    }
+</script>
+
 <h4>
-  <button id="tasks-button" class="btn btn-sm btn-light border">
+    <button id="tasks-button" class="btn btn-sm btn-light border" 
+    data-bs-toggle="collapse" href="#tasks" role="button" aria-expanded="false"
+    aria-controls="tasks" onclick="toggle_tasks()">
     ${'Hide' if tasks_shown else 'Show'}
-  </button>
+    </button>
   Tasks ${totals}
 </h4>
 <div id="tasks"
-     class="overflow-auto"
-     style="${'' if tasks_shown else 'display: none;'}">
+     class="overflow-auto ${'collapse show' if tasks_shown else 'collapse'}">
   <table class='table table-striped table-sm'>
     <thead class="sticky-top">
       <tr>
@@ -361,44 +372,71 @@ if 'spsa' in run['args']:
         referrerpolicy="no-referrer"></script>
 
 <script>
-  function set_highlight_theme_dark () {
-    $('head link[href*="/styles/github.min.css"]').remove();
-    $('head').append($('<link rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer" />')
-      .attr("href", "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css")
-      .attr("integrity", "sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==")
-  )}
+  function set_highlight_theme_dark() {
+    document.head.querySelector('link[href*="styles/github.min.css"]')?.remove();
+    const link = document.createElement("link");
+    link["rel"] = "stylesheet";
+    link["crossOrigin"] = "anonymous";
+    link["referrerPolicy"] = "no-referrer";
+    link["href"] =
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css";
+    link["integrity"] =
+      "sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==";
+    document.head.appendChild(link);
+  }
 
-  function set_highlight_theme_light () {
-    $('head link[href*="/styles/github-dark.min.css"]').remove();
-    $('head').append($('<link rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer" />')
-      .attr("href", "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css")
-      .attr("integrity", "sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==")
-  )}
-
-  $(document).ready(function () {
-    $.cookie('theme') === 'dark' ? set_highlight_theme_dark() : set_highlight_theme_light();
+  function set_highlight_theme_light() {
+    document.head
+      .querySelector('link[href*="styles/github-dark.min.css"]')
+      ?.remove();
+    const link = document.createElement("link");
+    link["rel"] = "stylesheet";
+    link["crossOrigin"] = "anonymous";
+    link["referrerPolicy"] = "no-referrer";
+    link["href"] =
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css";
+    link["integrity"] =
+      "sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==";
+    document.head.appendChild(link);
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    const match = document.cookie.match(
+      new RegExp("(^| )" + "theme" + "=([^;]+)")
+    );
+    const theme = match ? match[2] : false;
+    theme === "dark" ? set_highlight_theme_dark() : set_highlight_theme_light();
   });
 
-  $("#change-color-theme").click(function() {
-    $.cookie('theme') === 'light' ? set_highlight_theme_dark() : set_highlight_theme_light();
-  });
+  document
+    .querySelector("#change-color-theme")
+    .addEventListener("click", function () {
+      const match = document.cookie.match(
+        new RegExp("(^| )" + "theme" + "=([^;]+)")
+      );
+      const theme = match ? match[2] : false;
+      if (theme === "light") set_highlight_theme_dark();
+      else set_highlight_theme_light();
+    });
 </script>
 
 <script>
-  document.title = '${page_title} | Stockfish Testing';
+  document.title = "${page_title} | Stockfish Testing";
 
-  $(function() {
-    let $copyDiffBtn = $("#copy-diff");
-    if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-      $copyDiffBtn.on("click", () => {
+  document.addEventListener("DOMContentLoaded", function () {
+    let copyDiffBtn = document.querySelector("#copy-diff");
+    if (
+      document.queryCommandSupported &&
+      document.queryCommandSupported("copy")
+    ) {
+      copyDiffBtn.addEventListener("click", () => {
         const textarea = document.createElement("textarea");
         textarea.style.position = "fixed";
-        textarea.textContent = 'curl -s ${h.diff_url(run)}.diff | git apply';
+        textarea.textContent = "curl -s ${h.diff_url(run)}.diff | git apply";
         document.body.appendChild(textarea);
         textarea.select();
         try {
           document.execCommand("copy");
-          $(".copied").show();
+          document.querySelector(".copied").style.display = "";
         } catch (ex) {
           console.warn("Copy to clipboard failed.", ex);
         } finally {
@@ -406,56 +444,91 @@ if 'spsa' in run['args']:
         }
       });
     } else {
-      $copyDiffBtn = null;
+      copyDiffBtn = null;
     }
 
     // Fetch the diff and decide whether to show it on the page
-    const diffApiUrl = "${h.diff_url(run)}".replace("//github.com/", "//api.github.com/repos/");
-    $.ajax({
-      url: diffApiUrl,
-      headers: {
-        Accept: "application/vnd.github.v3.diff"
-      },
-      success: function(response) {
-        const numLines = response.split("\n").length;
-        const $toggleBtn = $("#diff-toggle");
-        const $diffContents = $("#diff-contents");
-        const $diffText = $diffContents.find("code");
-        $diffText.text(response);
-        $toggleBtn.on("click", function() {
-          $diffContents.toggle();
-          $copyDiffBtn && $copyDiffBtn.toggle();
-          if ($toggleBtn.text() === "Hide") {
-            $toggleBtn.text("Show");
-          } else {
-            $toggleBtn.text("Hide");
-          }
-        });
-        // Hide large diffs by default
-        if (numLines < 50) {
-          $diffContents.show();
-          $copyDiffBtn && $copyDiffBtn.show();
-          $toggleBtn.text("Hide");
-        } else {
-          $diffContents.hide();
-          $copyDiffBtn && $copyDiffBtn.hide();
-          $toggleBtn.text("Show");
-        }
-        $("#diff-section").show();
-        hljs.highlightElement($diffText[0]);
+    const diffApiUrl = "${h.diff_url(run)}".replace(
+      "//github.com/",
+      "//api.github.com/repos/"
+    );
 
-        // Show # of comments for this diff on Github
-        $.ajax({
-          url: diffApiUrl,
-          success: function(response) {
-            let numComments = 0;
-            response.commits.forEach(function(row) {
-              numComments += row.commit.comment_count;
-            });
-            $("#diff-num-comments").text("(" + numComments + " comments)").show();
-          }
+    // Check if the diff is already in sessionStorage and use it if it is
+    const diffId = sessionStorage.getItem("${run['_id']}");
+    if (!diffId) {
+      fetchDiff();
+    } else {
+      showDiff(diffId);
+    }
+
+    function fetchDiff() {
+      fetch(diffApiUrl, {
+        headers: {
+          Accept: "application/vnd.github.v3.diff",
+        },
+      })
+        .then((response) => {
+          if (response.ok) return response.text();
+        })
+        .then((text) => {
+          if (!text) return;
+          showDiff(text);
         });
+    }
+
+    function showDiff(text) {
+      const numLines = text.split("\n").length;
+      const toggleBtn = document.querySelector("#diff-toggle");
+      const diffContents = document.querySelector("#diff-contents");
+      const diffText = diffContents.querySelector("code");
+      diffText.textContent = text;
+
+      // Try to save the diff in sessionStorage
+      // It can throw an exception if there is not enough space
+      try {
+        sessionStorage.setItem("${run['_id']}", text);
+      } catch (e) {
+        console.warn("Could not save diff in sessionStorage");
       }
-    });
+
+      toggleBtn.addEventListener("click", function () {
+        diffContents.style.display =
+          diffContents.style.display === "none" ? "" : "none";
+        if (copyDiffBtn)
+          copyDiffBtn.style.display =
+            copyDiffBtn.style.display === "none" ? "" : "none";
+        if (toggleBtn.innerText === "Hide") toggleBtn.innerText = "Show";
+        else toggleBtn.innerText = "Hide";
+      });
+
+      // Hide large diffs by default
+      if (numLines < 50) {
+        diffContents.style.display = "";
+        if (copyDiffBtn) copyDiffBtn.style.display = "";
+        toggleBtn.innerText = "Hide";
+      } else {
+        diffContents.style.display = "none";
+        if (copyDiffBtn) copyDiffBtn.style.display = "none";
+        toggleBtn.innerText = "Show";
+      }
+      document.querySelector("#diff-section").style.display = "";
+      hljs.highlightElement(diffText);
+
+      // Fetch amount of comments
+      fetch(diffApiUrl)
+        .then((response) => {
+          if (response.ok) return response.json();
+        })
+        .then((json) => {
+          if (!json) return;
+          let numComments = 0;
+          json.commits.forEach(function (row) {
+            numComments += row.commit.comment_count;
+          });
+          document.querySelector("#diff-num-comments").innerText =
+            "(" + numComments + " comments)";
+          document.querySelector("#diff-num-comments").style.display = "";
+        });
+    }
   });
 </script>

@@ -29,9 +29,9 @@
 
 @media (min-width: 992px) {
   .layout {
-      display: grid;
-      grid-template-areas: "sidebar main";
-      grid-template-columns: 180px auto;
+    display: grid;
+    grid-template-areas: "sidebar main";
+    grid-template-columns: 180px auto;
   }
 
   .mainnavbar {
@@ -40,7 +40,7 @@
     top: 3.5rem;
     display: block !important;
     height: calc(100vh - 3.5rem);
-    overflow-y: auto
+    overflow-y: auto;
   }
 
   .run-info,
@@ -61,15 +61,15 @@
   }
 
   .links-nav {
-      -moz-column-count: 2;
-      column-count: 2;
-      -moz-column-gap: 0.5rem;
-      column-gap: 0.5rem;
+    -moz-column-count: 2;
+    column-count: 2;
+    -moz-column-gap: 0.5rem;
+    column-gap: 0.5rem;
   }
 
   .links-nav .links-group {
-      -moz-column-break-inside: avoid;
-      break-inside: avoid
+    -moz-column-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .links-nav .links-group > .list-unstyled {
@@ -82,12 +82,19 @@
   }
 
   .offcanvas-body::-webkit-scrollbar {
-    display: none
+    display: none;
+  }
+
+  .card-lg-sm {
+    --bs-card-spacer-y: 0.5rem;
+    --bs-card-spacer-x: 0.5rem;
+    --bs-card-cap-padding-y: 0.25rem;
+    --bs-card-cap-padding-x: 0.5rem;
   }
 }
 
 .main {
-  grid-area: main
+  grid-area: main;
 }
 
 ::-webkit-scrollbar {
@@ -113,12 +120,27 @@
   min-width: 53px;
 }
 
+.bg-light-primary {
+  background-color: rgba(var(--bs-primary-rgb), 0.15);
+  color: var(--bs-primary);
+}
+
+.bg-light-secondary {
+  background-color: rgba(var(--bs-secondary-rgb), 0.15);
+  color: var(--bs-secondary);
+}
+
 /* Confirm deny button */
 .run-deny .dropdown-menu.show {
   min-width: 0;
   padding: 0;
   background-color: transparent;
   border: none;
+}
+
+.dropdown-menu {
+  max-height: 10em;
+  overflow: auto;
 }
 
 a {
@@ -507,7 +529,20 @@ option.grayedoutoption {
   background-color: LightGray;
 }
 
+.mw-xxl {
+  max-width: 1320px;
+}
+
 .col-limited-size {
   max-width: 450px;
   margin: 0 auto 30px auto;
+}
+
+.monospace {
+  font-family: var(--bs-font-monospace);
+}
+
+input[type="checkbox"],
+.form-check-label {
+  cursor: pointer;
 }
